@@ -1,0 +1,41 @@
+#Importing Libraries
+
+import pandas as pd
+
+#Importing UFC_Events csv file
+UFC_Events = pd.read_csv('/Users/omarkhan/Desktop/ufc_event_data.csv')
+
+#Importing UFC Fighters csv file 
+UFC_Fighters = pd.read_csv('/Users/omarkhan/Desktop/ufc_fighters.csv')
+
+""" cleaning the files """
+#Data types 
+print(UFC_Events.dtypes)
+print()
+print(UFC_Fighters.dtypes)
+
+"""UFC_Events"""
+
+#Renaming columns 
+UFC_Events = UFC_Events.rename(columns={'Result': 'Winner', 'Fighter1': 'Fighter'})
+
+"""UFC_Fighters"""
+
+
+#Creating a composite key with First and Last name in order to create a join with UFC_Events on 'Fighter'
+UFC_Fighters['Fighter'] = UFC_Fighters['First Name'].str.cat(UFC_Fighters['Last Name'], sep=' ')
+
+#Dropping irrelevant columns 
+UFC_Fighters = UFC_Fighters.drop(['First Name', 'Last Name', 'Nickname'], axis=1)
+
+#Replacing the '--' with 0
+UFC_Fighters = UFC_Fighters.replace('--', np.nan)
+UFC_Fighters ['Weight'] = UFC_Fighters['Weight'].fillna('0')
+
+#Splitting the Weight fields, only keeping the numerical values
+UFC_Fighters['Weight'] = UFC_Fighters['Weight'].str.split(' ', expand=True)[0].astype(int)
+
+#Exporting the dataframes to CSV files
+UFC_Events.to_csv('/Users/omarkhan/Desktop/UFC_Events_Cln2.0.csv', index = False)
+UFC_Fighters.to_csv('/Users/omarkhan/Desktop/UFC_Fighters_Cln2.0.csv', index=False)
+
